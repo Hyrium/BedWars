@@ -18,6 +18,7 @@ use sergittos\bedwars\utils\ColorUtils;
 use sergittos\hyrium\session\scoreboard\Layout;
 use sergittos\hyrium\session\Session;
 use sergittos\bedwars\session\Session as BedwarsSession;
+use function array_merge;
 use function date;
 use function gmdate;
 
@@ -35,12 +36,12 @@ class GameLayout implements Layout {
         }
         $event = $stage->getNextEvent();
 
-        return [
+        return array_merge([
             "{GRAY}" . date("m/d/y"),
             " ",
             "{WHITE}" . $event->getName() . " in: {GREEN}" . gmdate("i:s", $event->getTimeRemaining()) . "   ",
-            "",
-        ] + $this->getTeams($session);
+            "  ",
+        ], $this->getTeams($session));
     }
 
     private function getTeams(BedwarsSession $session): array {
