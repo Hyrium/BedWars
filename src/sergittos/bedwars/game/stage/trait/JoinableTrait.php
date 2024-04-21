@@ -5,7 +5,7 @@ namespace sergittos\bedwars\game\stage\trait;
 
 
 use sergittos\bedwars\game\Game;
-use sergittos\bedwars\session\scoreboard\WaitingScoreboard;
+use sergittos\bedwars\session\scoreboard\WaitingLayout;
 use sergittos\bedwars\session\Session;
 use sergittos\bedwars\utils\ConfigGetter;
 use function strtoupper;
@@ -21,7 +21,7 @@ trait JoinableTrait {
         $session->getPlayer()->getEffects()->clear();
         $session->giveWaitingItems();
         $session->setGame($this->game);
-        $session->setScoreboard(new WaitingScoreboard());
+        $session->setScoreboardLayout(new WaitingLayout());
         $session->teleportToWaitingWorld();
 
         $this->game->broadcastMessage(

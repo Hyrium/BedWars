@@ -31,6 +31,7 @@ use sergittos\bedwars\listener\SetupListener;
 use sergittos\bedwars\listener\SpawnProtectionListener;
 use sergittos\bedwars\listener\WaitingListener;
 use sergittos\bedwars\provider\json\JsonProvider;
+use sergittos\bedwars\provider\mongodb\MongoDBProvider;
 use sergittos\bedwars\provider\mysql\MysqlProvider;
 use sergittos\bedwars\provider\Provider;
 use sergittos\bedwars\provider\sqlite\SqliteProvider;
@@ -114,6 +115,7 @@ class BedWars extends PluginBase {
             "mysql" => new MysqlProvider(),
             "sqlite", "sqlite3" => new SqliteProvider(),
             "json" => new JsonProvider(),
+            "mongodb" => new MongoDBProvider(),
             default => throw new \Error("Invalid provider, check your config and try again.")
         };
     }

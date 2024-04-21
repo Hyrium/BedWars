@@ -1,4 +1,9 @@
 <?php
+/*
+* Copyright (C) Sergittos - All Rights Reserved
+* Unauthorized copying of this file, via any medium is strictly prohibited
+* Proprietary and confidential
+*/
 
 declare(strict_types=1);
 
@@ -8,14 +13,18 @@ namespace sergittos\bedwars\session\scoreboard;
 
 use sergittos\bedwars\game\stage\PlayingStage;
 use sergittos\bedwars\game\team\Team;
-use sergittos\bedwars\session\Session;
+use sergittos\bedwars\session\SessionFactory;
 use sergittos\bedwars\utils\ColorUtils;
+use sergittos\hyrium\session\scoreboard\Layout;
+use sergittos\hyrium\session\Session;
+use sergittos\bedwars\session\Session as BedwarsSession;
 use function date;
 use function gmdate;
 
-class GameScoreboard extends Scoreboard {
+class GameLayout implements Layout {
 
-    protected function getLines(Session $session): array {
+    public function build(Session $session): array {
+        $session = SessionFactory::getSession($session->getPlayer());
         if(!$session->hasGame()) {
             return [];
         }
@@ -27,22 +36,20 @@ class GameScoreboard extends Scoreboard {
         $event = $stage->getNextEvent();
 
         return [
-            14 => "{GRAY}" . date("m/d/y"),
-            13 => " ",
-            12 => "{WHITE}" . $event->getName() . " in: {GREEN}" . gmdate("i:s", $event->getTimeRemaining()) . "   ",
-            11 => "  ",
+            "{GRAY}" . date("m/d/y"),
+            " ",
+            "{WHITE}" . $event->getName() . " in: {GREEN}" . gmdate("i:s", $event->getTimeRemaining()) . "   ",
+            "",
         ] + $this->getTeams($session);
     }
 
-    private function getTeams(Session $session): array {
+    private function getTeams(BedwarsSession $session): array {
         $teams = [];
-        $score = 10;
         foreach($session->getGame()->getTeams() as $team) {
-            $teams[$score] = ColorUtils::translate(
+            $teams[] = ColorUtils::translate(
                 $team->getColor() . $team->getFirstLetter() . " {WHITE}" . $team->getName() . ": " .
                 $this->getBedStatus($team) . ($team->hasMember($session) ? " {GRAY}YOU" : " ")
             );
-            $score--;
         }
 
         return $teams;

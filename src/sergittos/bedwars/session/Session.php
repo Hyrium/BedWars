@@ -23,13 +23,15 @@ use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\Server;
+use pocketmine\utils\TextFormat;
 use sergittos\bedwars\BedWars;
+use sergittos\bedwars\session\scoreboard\LobbyLayout;
+use sergittos\hyrium\session\scoreboard\Layout;
+use sergittos\hyrium\session\SessionFactory as HyriumSessionFactory;
 use sergittos\bedwars\game\Game;
 use sergittos\bedwars\game\stage\EndingStage;
 use sergittos\bedwars\game\team\Team;
 use sergittos\bedwars\item\BedwarsItems;
-use sergittos\bedwars\session\scoreboard\LobbyScoreboard;
-use sergittos\bedwars\session\scoreboard\Scoreboard;
 use sergittos\bedwars\session\settings\GameSettings;
 use sergittos\bedwars\session\settings\SpectatorSettings;
 use sergittos\bedwars\session\setup\MapSetup;
@@ -44,7 +46,6 @@ class Session {
     public const RESPAWN_DURATION = 5;
 
     private Player $player;
-    private Scoreboard $scoreboard;
 
     private GameSettings $game_settings;
     private SpectatorSettings $spectator_settings;
@@ -72,6 +73,8 @@ class Session {
 
         $this->load();
         $this->setEffectHooks();
+
+        HyriumSessionFactory::getSession($this->player)->getScoreboard()->setTitle(TextFormat::AQUA . TextFormat::BOLD . "BED WARS");
     }
 
     public function getPlayer(): Player {
@@ -80,6 +83,10 @@ class Session {
 
     public function getUsername(): string {
         return $this->player->getName();
+    }
+
+    public function getXuid(): string {
+        return $this->player->getXuid();
     }
 
     public function getColoredUsername(): string {
@@ -145,9 +152,8 @@ class Session {
         $this->spectator_settings = $spectator_settings;
     }
 
-    public function setScoreboard(Scoreboard $scoreboard): void {
-        $this->scoreboard = $scoreboard;
-        $this->updateScoreboard();
+    public function setScoreboardLayout(Layout $layout): void {
+        HyriumSessionFactory::getSession($this->player)->setScoreboardLayout($layout);
     }
 
     public function setGame(?Game $game): void {
@@ -179,7 +185,7 @@ class Session {
     }
 
     public function updateScoreboard(): void {
-        $this->scoreboard->show($this);
+        HyriumSessionFactory::getSession($this->player)->updateScoreboard();
     }
 
     public function attemptToRespawn(): void {
@@ -352,8 +358,10 @@ class Session {
 
         $this->clearAllInventories();
         $this->setTrackingSession(null);
-        $this->setScoreboard(new LobbyScoreboard());
+        $this->setScoreboardLayout(new LobbyLayout());
         $this->showBossBar("{DARK_GREEN}You are playing on {AQUA}" . strtoupper(ConfigGetter::getIP()));
+
+        HyriumSessionFactory::getSession($this->player)->giveLobbyItems();
     }
 
     public function kill(int $cause): void {

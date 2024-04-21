@@ -8,8 +8,8 @@ ip: "play.server.net"
 spawn-protection: true
 
 # Provider
-# Available providers: sqlite, mysql, json
-provider: "sqlite"
+# Available providers: sqlite, mysql, json, mongodb
+provider: "mongodb"
 
 # MySQL
 mysql-credentials:
