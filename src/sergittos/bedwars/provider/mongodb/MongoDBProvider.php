@@ -24,11 +24,16 @@ class MongoDBProvider extends Provider {
     public function loadSession(Session $session): void {
         Curl::getRequest(Hyrium::API_URL . "users/" . $session->getXuid(), 10, [], function(?InternetRequestResult $result) use ($session): void {
             $data = json_decode($result->getBody(), true);
+            $data = $data["bedwars"];
+
+            $session->setLoadingData(true);
 
             $session->setCoins($data["coins"]);
             $session->setKills($data["kills"]);
             $session->setWins($data["wins"]);
-            $session->setSpectatorSettings(SpectatorSettings::fromData($session, $data));
+            $session->setSpectatorSettings(SpectatorSettings::fromData($session, $data["spectatorSettings"]));
+
+            $session->setLoadingData(false);
         });
     }
 
@@ -46,9 +51,12 @@ class MongoDBProvider extends Provider {
 
     private function updateSession(Session $session): void {
         Curl::putRequest(Hyrium::API_URL . "users/" . $session->getXuid(), [
-            "coins" => $session->getCoins(),
-            "kills" => $session->getKills(),
-            "wins" => $session->getWins()
+            "bedwars" => [
+                "coins" => $session->getCoins(),
+                "kills" => $session->getKills(),
+                "wins" => $session->getWins(),
+                "spectatorSettings" => $session->getSpectatorSettings()->jsonSerialize()
+            ]
         ], 10, ["Content-Type: application/json"], function(?InternetRequestResult $result) use ($session): void {});
     }
 

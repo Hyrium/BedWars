@@ -6,13 +6,14 @@ declare(strict_types=1);
 namespace sergittos\bedwars\session\settings;
 
 
+use JsonSerializable;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\utils\Limits;
 use sergittos\bedwars\session\Session;
 use sergittos\bedwars\utils\GameUtils;
 
-class SpectatorSettings {
+class SpectatorSettings implements JsonSerializable {
 
     private Session $session;
 
@@ -29,7 +30,7 @@ class SpectatorSettings {
     }
 
     static public function fromData(Session $session, array $data): SpectatorSettings {
-        return new SpectatorSettings($session, (int) $data["flying_speed"], (bool) $data["auto_teleport"], (bool) $data["night_vision"]);
+        return new SpectatorSettings($session, (int) $data["flyingSpeed"], (bool) $data["autoTeleport"], (bool) $data["nightVision"]);
     }
 
     public function getFlyingSpeed(): int {
@@ -82,6 +83,14 @@ class SpectatorSettings {
         if($this->night_vision) {
             $this->session->addEffect(new EffectInstance(VanillaEffects::NIGHT_VISION(), Limits::INT32_MAX, 0, false));
         }
+    }
+
+    public function jsonSerialize(): array {
+        return [
+            "flyingSpeed" => $this->flying_speed,
+            "autoTeleport" => $this->auto_teleport,
+            "nightVision" => $this->night_vision
+        ];
     }
 
 }

@@ -36,11 +36,7 @@ class JsonProvider extends Provider {
         $config->set("coins", $session->getCoins());
         $config->set("kills", $session->getKills());
         $config->set("wins", $session->getWins());
-        $config->set("spectator_settings", [
-            "flying_speed" => $session->getSpectatorSettings()->getFlyingSpeed(),
-            "auto_teleport" => $session->getSpectatorSettings()->getAutoTeleport(),
-            "night_vision" => $session->getSpectatorSettings()->getNightVision()
-        ]);
+        $config->set("spectator_settings", $session->getSpectatorSettings()->jsonSerialize());
         $config->save();
     }
 
@@ -56,9 +52,9 @@ class JsonProvider extends Provider {
             "kills" => 0,
             "wins" => 0,
             "spectator_settings" => [
-                "flying_speed" => 0,
-                "auto_teleport" => true,
-                "night_vision" => true
+                "flyingSpeed" => 0,
+                "autoTeleport" => true,
+                "nightVision" => true
             ]
         ]);
     }

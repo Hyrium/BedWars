@@ -184,6 +184,10 @@ class Session {
         );
     }
 
+    public function setLoadingData(bool $loading_data): void {
+        $this->loading_data = $loading_data;
+    }
+
     public function updateScoreboard(): void {
         HyriumSessionFactory::getSession($this->player)->updateScoreboard();
     }
